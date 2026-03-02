@@ -1,0 +1,6 @@
+# Python cache
+__pycache__/
+Scripts/__pycache__/
+*.pyc
+*.py[cod]
+settings.json
