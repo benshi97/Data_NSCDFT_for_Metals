@@ -81,7 +81,7 @@ def get_vasp_walltime(filename):
     This function reads the 'OUTCAR' file and extracts the total walltime taken by the VASP calculation.
     """
 
-    f = open(filename)
+    f = _open_file(filename)
     a = f.readlines()
     # Search for the line with "Elapsed time (sec):" string and get the last column of the line
     for line in a:
@@ -300,7 +300,6 @@ def get_cbs(
             )
         return hf_cbs + shift, corr_cbs, (hf_cbs + corr_cbs) + shift
     
-
 def convert_df_to_latex_input(
     df,
     start_input = '\\begin{table}\n',
@@ -317,29 +316,145 @@ def convert_df_to_latex_input(
     column_format = None,
     center = False,
     rotate_column_header = False,
-    output_str = False
+    output_str = False,
+    float_fmt = None,
+    longtable = False,
+    longtable_continue_caption = "(continued)",
 ):
+    """
+    Convert a pandas DataFrame to LaTeX and optionally emit a full longtable environment.
+
+    Args (new):
+      longtable: bool. If True, produce a longtable instead of a table/ tabular snippet.
+      longtable_continue_caption: text used for the continued caption in the second chunk.
+
+    All other args preserved / behave as before (with slight adjustments to caption placement
+    when longtable=True).
+    """
+
+    # default column_format if not provided
     if column_format is None:
         column_format = "l" + "r" * len(df.columns)
-    
+
+    # label + caption pieces
     if label != "":
         label_input = r"\label{" + label + r"}"
     else:
         label_input = ""
     caption_input = r"\caption{" + label_input + caption +  "}"
 
+    # optionally rotate column headers
     if rotate_column_header:
-        df.columns = [r'\rotatebox{90}{' + col + '}' for col in df.columns]
+        df = df.copy()
+        df.columns = [r'\rotatebox{90}{' + str(col) + '}' for col in df.columns]
 
+    # produce latex from pandas (no external caption yet)
     with pd.option_context("max_colwidth", 1000):
-        df_latex_input = df.to_latex(escape=False, column_format=column_format,multicolumn_format='c', multicolumn=True,index=index)
+        if float_fmt is not None:
+            df_latex_input = df.to_latex(
+                escape=False,
+                column_format=column_format,
+                multicolumn_format='c',
+                multicolumn=True,
+                index=index,
+                float_format=float_fmt
+            )
+        else:
+            df_latex_input = df.to_latex(
+                escape=False,
+                column_format=column_format,
+                multicolumn_format='c',
+                multicolumn=True,
+                index=index
+            )
+
+    # apply simple replacements
     for key in replace_input:
         df_latex_input = df_latex_input.replace(key, replace_input[key])
-    
+
+    # optionally skip top/bottom lines of pandas output (same as before)
     df_latex_input_lines = df_latex_input.splitlines()[df_latex_skip:]
-    # Get index of line with midrule
+
+    # find top rule index (as before)
     toprule_index = [i for i, line in enumerate(df_latex_input_lines) if "toprule" in line][0]
+    # add multiindex_sep to the header row if requested (keeps your previous behavior)
     df_latex_input_lines[toprule_index+1] = df_latex_input_lines[toprule_index+1] + ' ' + multiindex_sep
+
+    # ===== LONGTABLE handling =====
+    if longtable:
+        # Replace \begin{tabular}{...} with \begin{longtable}{...}
+        joined = '\n'.join(df_latex_input_lines)
+
+        # Replace \begin{tabular}{...} with \begin{longtable}{...}
+        joined = re.sub(
+            r'\\begin\{tabular\}\{([^\}]*)\}',
+            lambda m: r'\begin{longtable}{' + m.group(1) + r'}',
+            joined,
+            count=1
+        )
+
+        # Insert caption right after \begin{longtable}{...}
+        joined = re.sub(
+            r'(\\begin\{longtable\}\{[^\}]*\})',
+            lambda m: m.group(1) + "\n" + caption_input + r" \\",
+            joined,
+            count=1
+        )
+
+        # split back to lines to find header row position (toprule index may have shifted)
+        lines = joined.splitlines()
+
+        # recompute top rule and header indices in the modified lines
+        try:
+            toprule_index2 = [i for i, line in enumerate(lines) if "toprule" in line][0]
+            header_idx = toprule_index2 + 1  # header line (column names)
+        except IndexError:
+            # fallback: place longtable markers near beginning if we can't find top rule
+            header_idx = 2
+
+        # number of columns for continued footer (include index column if present)
+        n_cols = len(df.columns) + (1 if index else 0)
+
+        # construct the standard longtable continuation blocks (you can customize if needed)
+        longtable_blocks = [
+            r'\endfirsthead',
+            '',
+            r'\caption[]{' + longtable_continue_caption + r'} \\',
+            r'\endhead',
+            '',
+            r'\multicolumn{' + str(n_cols) + r'}{r}{{Continued on next page}} \\',
+            r'\endfoot',
+            '',
+            r'\bottomrule',
+            r'\endlastfoot',
+            ''
+        ]
+
+        # insert longtable_blocks into lines after the header row but before the midrule/data
+        insert_pos = header_idx + 1
+        # guard: don't overflow
+        if insert_pos > len(lines):
+            insert_pos = len(lines)
+        lines[insert_pos:insert_pos] = longtable_blocks
+
+        # Now the pandas produced \end{tabular} still exists; replace it with \end{longtable}
+        for i, ln in enumerate(lines):
+            if r'\end{tabular}' in ln:
+                lines[i] = ln.replace(r'\end{tabular}', r'\end{longtable}')
+                break
+
+        df_latex_input = '\n'.join(lines)
+
+        # When using longtable, we won't wrap the output with start_input/ end_input table env
+        # so the output_str mode should return df_latex_input directly.
+        if output_str:
+            return df_latex_input
+        else:
+            with open(filename, "w") as f:
+                f.write(df_latex_input)
+            return None
+
+    # ===== non-longtable (original path, slightly refactored) =====
     df_latex_input = '\n'.join(df_latex_input_lines)
     end_adjustbox = False
 
@@ -352,7 +467,7 @@ def convert_df_to_latex_input(
             end_adjustbox = True
         elif adjustbox > 0 and center == False:
             latex_string += r"\begin{adjustbox}{max width=" + f"{adjustbox}" + r"\textwidth}" + "\n"
-            end_adjustbox = True    
+            end_adjustbox = True
         elif adjustbox > 0 and center == True:
             latex_string += r"\begin{adjustbox}{center,max width=" + f"{adjustbox}" + r"\textwidth}" + "\n"
             end_adjustbox = True
@@ -374,7 +489,7 @@ def convert_df_to_latex_input(
                 end_adjustbox = True
             elif adjustbox > 0 and center == False:
                 f.write(r"\begin{adjustbox}{max width=" + f"{adjustbox}" + r"\textwidth}" + "\n")
-                end_adjustbox = True    
+                end_adjustbox = True
             elif adjustbox > 0 and center == True:
                 f.write(r"\begin{adjustbox}{center,max width=" + f"{adjustbox}" + r"\textwidth}" + "\n")
                 end_adjustbox = True
@@ -385,4 +500,4 @@ def convert_df_to_latex_input(
             if end_adjustbox:
                 f.write("\n\\end{adjustbox}")
             f.write("\n" + end_input)
-        
+        return None
