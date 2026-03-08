@@ -7,6 +7,8 @@ import numpy as np
 from datetime import datetime
 import pandas as pd
 import gzip
+from scipy.interpolate import UnivariateSpline
+from ase.io import read
 
 import re
 
