@@ -4,3 +4,4 @@ Scripts/__pycache__/
 *.pyc
 *.py[cod]
 settings.json
+.DS_Store
