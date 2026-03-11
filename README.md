@@ -12,7 +12,7 @@ The data for plotting all of the graphs in the main text and supplemental materi
 Density functional theory (DFT) underpins modern atomistic models of heterogeneous catalysis on transition-metal surfaces.
 It has opened new paradigms in rational catalyst design, predicting fundamental properties, like the adsorption energy and reaction barriers, linked to catalytic performance.
 However, such applications depend sensitively on the predictive accuracy of DFT.
-Achieving experimental-level reliability, so-called transition-metal chemical accuracy ($\SI{13}{\kjmol}$), remains challenging for present density functional approximations (DFAs) and even for methods beyond DFT.
+Achieving experimental-level reliability, so-called transition-metal chemical accuracy (13 kJ/mol), remains challenging for present density functional approximations (DFAs) and even for methods beyond DFT.
 We introduce a new framework for designing DFAs tailored for molecules on transition-metal surfaces, building on recent developments in non-self-consistent DFAs.
 We develop two functionals within this framework, demonstrating that transition-metal chemical accuracy can be achieved across 39 diverse adsorption reactions while delivering balanced performance for 17 barrier heights.
 Moreover, the functionals correct qualitative failures of current self-consistent DFAs, including the predicted adsorption configurations of CO on Pt(111) and graphene on Ni(111).
