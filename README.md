@@ -55,6 +55,175 @@ export PATH="/path/to/vasp/bin:$PATH"
 
 Replace `/path/to/...` with the actual installation paths on your system.
 
+## How to Run
+
+Below is a minimal example Python script showing how to run the workflow. There is a workflow function `dhbeefvdw_flow` for running dhBEEF-vdW@BEEF-vdW and another `hbeefvdw_flow` fo running hBEEF-vdW@BEEF-vdW
+
+Create a file called `run_calculation.py`:
+
+```python
+from ase import io
+from nsc_dft import dhbeefvdw_flow  # or hbeefvdw_flow
+
+# Read structure (VASP POSCAR format)
+atoms = io.read("POSCAR")
+
+# Run the workflow
+results = dhbeefvdw_flow(
+    atoms,
+    kpts=[12, 12, 1],      # Example k-point mesh
+    calc_dir="calc_run",  # Output directory
+)
+
+# Print selected energies
+print("dhBEEF-vdW energy:", results["dhbeef_vdw"])
+print("RPA energy:", results["rpa"])
+```
+
+Then run:
+
+```bash
+python run_calculation.py
+```
+
+Ensure:
+- `POSCAR` is present in the working directory.
+- Your VASP environment variables are configured.
+- The chosen `kpts` mesh is appropriate for your system.
+
+We note that these calculations are restartable, so if it fails or reaches the computer walltime, you can run it again and it will restart from the last calculation. Running the function again once all calculations have finished will then simply analyze the energy to give the dhBEEF-vdW@BEEF-vdW and hBEEF-vdW@BEEF-vdW energies.
+
+---
+
+## What the Returned Energies Mean
+
+Both workflows return a dictionary of total energies (in eV) extracted from the corresponding VASP calculations. Below is a brief explanation of each term.
+
+### BEEF / Hybrid Components
+
+- **`beef_xc_vdw`**  
+  Total energy from a self-consistent BEEF-vdW calculation.  
+  Includes exchange, correlation, and the nonlocal vdW contribution.
+
+- **`beef_xc`**  
+  Energy from a non-self-consistent BEEF exchange–correlation calculation  
+  (vdW contribution removed, using the same wavefunctions).
+
+- **`beef_x`**  
+  Energy from a non-self-consistent BEEF *exchange-only* calculation  
+  (correlation removed).
+
+- **`exx`**  
+  Exact exchange (Hartree–Fock–like) energy computed non-self-consistently  
+  using wavefunctions from the initial calculation.
+
+- **`hbeef_vdw`**  
+  Final hybrid BEEF-vdW total energy constructed from a mixture of:
+  - exact exchange (`exx`)
+  - BEEF exchange (`beef_x`)
+  - BEEF correlation
+  - nonlocal vdW contribution
+
+---
+
+### RPA / Double-Hybrid Components (only in `dhbeefvdw_flow`)
+
+- **`pbe`**  
+  Self-consistent PBE calculation used as the starting point for the RPA block.
+
+- **`pbe_exx`**  
+  Exact exchange energy evaluated using the PBE/RPA wavefunctions.
+
+- **`rpac`**  
+  RPA correlation energy (ACFD total correlation contribution).
+
+- **`rpa`**  
+  Combined RPA total energy:
+  ```
+  rpa = pbe_exx + rpac
+  ```
+
+- **`dhbeef_vdw`**  
+  Final double-hybrid BEEF-vdW energy constructed from:
+  - a fraction of exact exchange (`exx`)
+  - a fraction of RPA correlation (`rpac`)
+  - the remaining BEEF exchange and correlation
+  - the nonlocal vdW contribution
+
+---
+
+All values are total electronic energies (eV) corresponding to the same input structure.
+
+## Bash Workflow
+
+We also provide a Bash workflow (`run_vasp_flow.sh`) that runs the full **hBEEF-vdW** or **dhBEEF-vdW** VASP workflow in separate step directories and optionally performs final energy analysis.
+
+All required VASP input files (`POSCAR`, `POTCAR`, `KPOINTS`, etc.) must be placed in:
+
+```
+inputs/
+```
+
+---
+
+## Usage
+
+```bash
+bash run_vasp_flow.sh "<MPI launcher>" <mode>
+```
+
+### Example (SLURM + `srun`)
+
+```bash
+bash run_vasp_flow.sh "srun --distribution=block:block --hint=nomultithread" dhbeefvdw
+```
+
+### Example (OpenMPI)
+
+```bash
+bash run_vasp_flow.sh "mpirun -x PATH -x LD_LIBRARY_PATH -np 16" dhbeef
+```
+
+---
+
+## Modes
+
+| Mode         | Description |
+|--------------|------------|
+| `hbeef`      | Run steps 01–04 only |
+| `hbeefvdw`   | Run steps 01–04 and compute the final hBEEF-vdW energy |
+| `dhbeef`     | Run steps 01–08 only |
+| `dhbeefvdw`  | Run steps 01–08 and compute the final dhBEEF-vdW energy |
+
+---
+
+## Features
+
+- Each calculation step is run in a separate directory (`01_beefxc_vdw`, `02_beefxc`, etc.).
+- Outputs are automatically gzip-compressed.
+- The workflow is restartable — completed steps are automatically detected and skipped.
+- Final energies are printed to the terminal when analysis is enabled.
+
+---
+
+## Example Output
+
+```
+----------------------------------------------------------------
+beef_xc_vdw:             -12.0989351300
+beef_xc:                 -14.3761905700
+beef_x:                  -13.4335696200
+exx:                     -25.2017108900
+hbeef_vdw:               -14.1583598522
+----------------------------------------------------------------
+pbe:                     -13.8190145900
+pbe_exx:                 -30.6672269900
+rpac:                    -15.1756883678
+rpa:                     -45.8429153578
+----------------------------------------------------------------
+dhbeef_vdw:              -17.1759305602
+----------------------------------------------------------------
+```
 
 ## Paper abstract
 
