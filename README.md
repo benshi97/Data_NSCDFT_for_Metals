@@ -23,12 +23,15 @@ pip install "quacc @ git+https://github.com/quantum-accelerators/quacc.git"
 
 ### Add Project Scripts to `PYTHONPATH`
 
-After installing `quacc`, clone this repository and add the provided scripts to your `PYTHONPATH`:
+After installing `quacc`, add the scripts to perform NSC DFT calculations to your `PYTHONPATH`:
 
 ```bash
-git clone https://github.com/benshi97/Data_NSCDFT_for_Metals.git
-cd Data_NSCDFT_for_Metals/Scripts
-export PYTHONPATH="$PWD:$PYTHONPATH"
+mkdir -p NSC_DFT
+cd NSC_DFT
+wget -P . https://raw.githubusercontent.com/benshi97/Data_NSCDFT_for_Metals/main/Scripts/{nsc_dft.py,nsc_dft.sh,analysis_scripts.py}
+chmod +x nsc_dft.sh
+export PATH="/path/to/NSC_DFT:$PATH"
+export PYTHONPATH="/path/to/NSC_DFT:$PYTHONPATH"
 ```
 
 > **Note:** You may wish to add the `export` line to your `.bashrc` or `.zshrc` to make the change permanent.
