@@ -29,7 +29,7 @@ After installing `quacc`, add the scripts to perform NSC DFT calculations to you
 mkdir -p NSC_DFT
 cd NSC_DFT
 wget -P . https://raw.githubusercontent.com/benshi97/Data_NSCDFT_for_Metals/main/Scripts/{nsc_dft.py,nsc_dft.sh,analysis_scripts.py}
-chmod +x nsc_dft.sh
+chmod +x nsc_dft.sh nsc_dft.py
 export PATH="/path/to/NSC_DFT:$PATH"
 export PYTHONPATH="/path/to/NSC_DFT:$PYTHONPATH"
 ```
