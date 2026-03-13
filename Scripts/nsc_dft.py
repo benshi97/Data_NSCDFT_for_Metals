@@ -7,6 +7,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
+from ase.io import read as ase_read
 
 import numpy as np
 from monty.os.path import zpath
@@ -82,7 +83,7 @@ def main() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
-    atoms = io.read(args.structure)
+    atoms = ase_read(args.structure)
 
     common_kwargs = {
         "atoms": atoms,
