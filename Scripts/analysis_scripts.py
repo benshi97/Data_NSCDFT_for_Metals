@@ -9,6 +9,7 @@ import pandas as pd
 import gzip
 from scipy.interpolate import UnivariateSpline
 from ase.io import read
+from pathlib import Path
 
 import re
 
@@ -125,7 +126,8 @@ def get_vasp_looptime(filename):
 
 def _open_file(filename, mode="rt", encoding=None):
     """Open regular or gzipped file transparently."""
-    if filename.endswith(".gz"):
+    filename = Path(filename)
+    if filename.suffix == ".gz":
         return gzip.open(filename, mode=mode, encoding=encoding)
     return open(filename, mode=mode, encoding=encoding)
 
