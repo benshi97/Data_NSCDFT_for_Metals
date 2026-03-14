@@ -13,7 +13,7 @@ inputs         run_quacc.py
 ```
 
 - `01_beefxc_vdw` … `08_rpa` — step directories used by the workflows  
-- `inputs/` — required VASP input files for this example  
+- `inputs/` — required VASP input files (**only if you plan to use the Bash workflow**) for this example 
 - `run_quacc.py` — Python script that runs the `dhbeefvdw_flow` and prints the analyzed energies  
 
 ---
