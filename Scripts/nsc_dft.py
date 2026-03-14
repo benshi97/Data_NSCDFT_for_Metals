@@ -1,13 +1,10 @@
-#!/usr/bin/env python3
 """QuAcc recipes for NSC-DFAs in VASP."""
 
 from __future__ import annotations
 
-import argparse
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
-from ase.io import read as ase_read
 
 import numpy as np
 from monty.os.path import zpath
@@ -37,71 +34,6 @@ if TYPE_CHECKING:
         SourceDirectory,
         VaspSchema,
     )
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Run NSC-DFT VASP workflows from the command line."
-    )
-
-    parser.add_argument(
-        "--structure",
-        "-s",
-        default="POSCAR",
-        help="Input structure file readable by ASE (default: POSCAR).",
-    )
-    parser.add_argument(
-        "--flow",
-        "-f",
-        choices=["dhbeefvdw", "hbeefvdw"],
-        default="dhbeefvdw",
-        help="Which workflow to run.",
-    )
-    parser.add_argument(
-        "--kpts",
-        "-k",
-        nargs=3,
-        type=int,
-        metavar=("KX", "KY", "KZ"),
-        required=True,
-        help="K-point mesh, e.g. --kpts 12 12 1",
-    )
-    parser.add_argument(
-        "--calc-dir",
-        "-c",
-        default="calc_run",
-        help="Calculation directory.",
-    )
-
-    return parser.parse_args()
-
-
-def main() -> None:
-    args = parse_args()
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
-
-    atoms = ase_read(args.structure)
-
-    common_kwargs = {
-        "atoms": atoms,
-        "kpts": args.kpts,
-        "calc_dir": args.calc_dir,
-    }
-
-    if args.flow == "dhbeefvdw":
-        results = dhbeefvdw_flow(**common_kwargs)
-        print("dhBEEF-vdW energy:", results["dhbeef_vdw"])
-        print("RPA energy:", results["rpa"])
-    elif args.flow == "hbeefvdw":
-        results = hbeefvdw_flow(**common_kwargs)
-        print("hBEEF-vdW energy:", results["hbeef_vdw"])
-
-
-if __name__ == "__main__":
-    main()
 
 @flow
 def dhbeefvdw_flow(
@@ -401,24 +333,8 @@ def dhbeefvdw_flow(
                 else:
                     raise RuntimeError(f"No failed-quacc* directories found in {calc_dir}/08_rpa. Please check for errors in the calculations.")
 
-    final_energies = analyze_dhbeefvdw_flow(calc_dir)
 
-    LOGGER.info("----------------------------------------------------------------")
-    LOGGER.info(f"{'beef_xc_vdw:':<25}{final_energies['beef_xc_vdw']:>15.10f}")
-    LOGGER.info(f"{'beef_xc:':<25}{final_energies['beef_xc']:>15.10f}")
-    LOGGER.info(f"{'beef_x:':<25}{final_energies['beef_x']:>15.10f}")
-    LOGGER.info(f"{'exx:':<25}{final_energies['exx']:>15.10f}")
-    LOGGER.info(f"{'hbeef_vdw:':<25}{final_energies['hbeef_vdw']:>15.10f}")
-    LOGGER.info("----------------------------------------------------------------")
-    LOGGER.info(f"{'pbe:':<25}{final_energies['pbe']:>15.10f}")
-    LOGGER.info(f"{'pbe_exx:':<25}{final_energies['pbe_exx']:>15.10f}")
-    LOGGER.info(f"{'rpac:':<25}{final_energies['rpac']:>15.10f}")
-    LOGGER.info(f"{'rpa:':<25}{final_energies['rpa']:>15.10f}")
-    LOGGER.info("----------------------------------------------------------------")
-    LOGGER.info(f"{'dhbeef_vdw:':<25}{final_energies['dhbeef_vdw']:>15.10f}")
-    LOGGER.info("----------------------------------------------------------------")
-
-    return final_energies
+    return analyze_dhbeefvdw_flow(calc_dir)
 
 @flow
 def hbeefvdw_flow(
@@ -586,17 +502,7 @@ def hbeefvdw_flow(
                 else:
                     raise RuntimeError(f"No failed-quacc* directories found in {calc_dir}/04_exx. Please check for errors in the calculations.")
 
-    final_energies = analyze_hbeefvdw_flow(calc_dir)
-
-    LOGGER.info("----------------------------------------------------------------")
-    LOGGER.info(f"{'beef_xc_vdw:':<25}{final_energies['beef_xc_vdw']:>15.10f}")
-    LOGGER.info(f"{'beef_xc:':<25}{final_energies['beef_xc']:>15.10f}")
-    LOGGER.info(f"{'beef_x:':<25}{final_energies['beef_x']:>15.10f}")
-    LOGGER.info(f"{'exx:':<25}{final_energies['exx']:>15.10f}")
-    LOGGER.info(f"{'hbeef_vdw:':<25}{final_energies['hbeef_vdw']:>15.10f}")
-    LOGGER.info("----------------------------------------------------------------")
-
-    return final_energies
+    return analyze_hbeefvdw_flow(calc_dir)
 
 @job
 def job_1_beefxc_vdw(

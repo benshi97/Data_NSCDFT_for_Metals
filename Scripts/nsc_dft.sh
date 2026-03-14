@@ -17,7 +17,7 @@ set -euo pipefail
 #     - vdw_kernel.bindat
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 \"<runner_command>\" <mode: hbeef|dhbeef>"
+  echo "Usage: $0 \"<runner_command>\" <mode: hbeefvdw|dhbeefvdw>"
   exit 1
 fi
 
@@ -25,7 +25,7 @@ RUNNER="$1"
 MODE="$2"
 INPUTS_DIR="inputs"
 
-if [[ "$MODE" != "hbeef" && "$MODE" != "dhbeef" ]]; then
+if [[ "$MODE" != "hbeefvdw" && "$MODE" != "dhbeefvdw" ]]; then
   echo "Error: mode must be 'hbeef' or 'dhbeef'"
   exit 1
 fi
@@ -204,7 +204,7 @@ do_step "02_beefxc"     "INCAR_02_beefxc"     "no"  "01_beefxc_vdw" "" "" ""    
 do_step "03_beefx"      "INCAR_03_beefx"      "no"  "01_beefxc_vdw" "" "" ""      "KPOINTS_DFT" "POTCAR_DFT"
 do_step "04_exx"        "INCAR_04_exx"        "no"  "01_beefxc_vdw" "" "" ""      "KPOINTS_DFT" "POTCAR_DFT"
 
-if [[ "$MODE" == "hbeef" ]]; then
+if [[ "$MODE" == "hbeefvdw" ]]; then
     analyze_hbeefvdw_flow
     exit 0
 fi
@@ -301,6 +301,6 @@ do_step "07_bands" "INCAR_07_bands" "yes" "05_pbe_rpa" "XXX" "$nbands" "" "KPOIN
 # Step 08 loads WAVECAR from 07, inject nbands
 do_step "08_rpa" "INCAR_08_rpa" "no" "07_bands" "XXX" "$nbands" "" "KPOINTS_RPA" "POTCAR_RPA"
 
-if [[ "$MODE" == "dhbeef" ]]; then
+if [[ "$MODE" == "dhbeefvdw" ]]; then
   analyze_dhbeefvdw_flow
 fi
