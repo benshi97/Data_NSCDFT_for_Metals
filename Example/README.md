@@ -32,11 +32,7 @@ python run_quacc.py
 nsc_dft.sh "" dhbeefvdw
 ```
 
-The first argument is the MPI launcher command. Using `""` runs serially (useful for testing), but you can also provide a launcher such as:
-
-```bash
-nsc_dft.sh "srun --distribution=block:block --hint=nomultithread" dhbeefvdw
-```
+The first argument is the MPI launcher command. Using `""` runs serially (useful for testing and analysis after calculations finish).
 
 Both approaches will run (or analyze) the calculations stored in the step directories.
 
