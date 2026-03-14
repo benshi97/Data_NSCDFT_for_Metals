@@ -42,9 +42,10 @@ Both approaches will run (or analyze) the calculations stored in the step direct
 
 ---
 
+
 ## Example Output
 
-After completion, the analyzed energies are printed:
+After the workflow finishes, the script analyzes the results from each calculation directory and prints the final energies (in eV):
 
 ```
 ----------------------------------------------------------------
@@ -62,5 +63,3 @@ rpa:           -45.8429153578
 dhbeef_vdw:    -17.1759305602
 ----------------------------------------------------------------
 ```
-
-All energies are reported in **electron volts (eV)** for the CO molecule.
