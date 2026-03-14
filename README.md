@@ -2,7 +2,7 @@
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-# Data_NSCDFT_for_Metals
+# Non-self-consistent density functionals for transition metal surfaces
 
 ## Introduction
 
@@ -118,6 +118,18 @@ python run_calculation.py
 
 The workflow is **restartable**. If a calculation stops (e.g., due to walltime limits), running the script again will continue from the last completed step.
 
+All calculations will be performed in a directory called `calc_dir`. The workflow consists of eight sequential steps (see Supplementary Section 1 of the paper), each run in its own subdirectory:
+```
+calc_dir/
+├── 01_beefxc_vdw
+├── 02_beefxc
+├── 03_beefx
+├── 04_exx
+├── 05_pbe_rpa
+├── 06_pbe_exx
+├── 07_bands
+└── 08_rpa
+```
 Once all calculations are finished, running the script again will simply perform the final energy analysis.
 
 ---
@@ -216,30 +228,33 @@ bash nsc_dft.sh "mpirun -x PATH -x LD_LIBRARY_PATH -np 16" hbeefvdw
 
 ---
 
-# Features
+## Features of Bash Workflow
 
 - Each calculation step runs in its own directory
 - Output files are automatically gzip-compressed
 - The workflow is **restartable**
 - Completed steps are automatically skipped
+- The `quacc` and bash workflows can be intermixed.
 
 ---
 
-# Example Output
+## Example Bash Workflow Output
+
+After the workflow finishes, the script analyzes the results from each calculation directory and prints the final energies (in eV):
 
 ```
 ----------------------------------------------------------------
-beef_xc_vdw:             -12.0989351300
-beef_xc:                 -14.3761905700
-beef_x:                  -13.4335696200
-exx:                     -25.2017108900
-hbeef_vdw:               -14.1583598522
+beef_xc_vdw:   -12.0989351300
+beef_xc:       -14.3761905700
+beef_x:        -13.4335696200
+exx:           -25.2017108900
+hbeef_vdw:     -14.1583598522
 ----------------------------------------------------------------
-pbe:                     -13.8190145900
-pbe_exx:                 -30.6672269900
-rpac:                    -15.1756883678
-rpa:                     -45.8429153578
+pbe:           -13.8190145900
+pbe_exx:       -30.6672269900
+rpac:          -15.1756883678
+rpa:           -45.8429153578
 ----------------------------------------------------------------
-dhbeef_vdw:              -17.1759305602
+dhbeef_vdw:    -17.1759305602
 ----------------------------------------------------------------
 ```
