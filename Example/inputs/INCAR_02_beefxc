@@ -1,0 +1,29 @@
+ENCUT = 550
+LASPH = .TRUE. 
+
+ISMEAR = -1
+SIGMA = 0.1
+
+GGA = LIBXC
+LIBXC1 = GGA_XC_BEEFVDW
+LUSE_VDW  = .FALSE.
+# ZAB_VDW   = -1.8867 # the default is -0.8491
+LASPH     = .TRUE.
+
+PREC = Accurate
+ALGO = Eigenval
+LREAL = Auto
+ISTART = 1
+NELM = 1
+EDIFF = 1E-8
+
+IBRION = -1
+NSW = 0
+
+LCHARG = .FALSE. # CHGCAR
+LWAVE = .FALSE. # WAVECAR
+
+NCORE = 8
+KPAR = 2
+NSIM = 8
+ISYM = 0
