@@ -226,6 +226,8 @@ bash nsc_dft.sh "srun --distribution=block:block --hint=nomultithread" dhbeefvdw
 bash nsc_dft.sh "mpirun -x PATH -x LD_LIBRARY_PATH -np 16" hbeefvdw
 ```
 
+The output is individual energies from each calculation. See the `Example` folder.
+
 ---
 
 ## Features of Bash Workflow
@@ -236,25 +238,4 @@ bash nsc_dft.sh "mpirun -x PATH -x LD_LIBRARY_PATH -np 16" hbeefvdw
 - Completed steps are automatically skipped
 - The `quacc` and bash workflows can be intermixed.
 
----
 
-## Example Bash Workflow Output
-
-After the workflow finishes, the script analyzes the results from each calculation directory and prints the final energies (in eV):
-
-```
-----------------------------------------------------------------
-beef_xc_vdw:   -12.0989351300
-beef_xc:       -14.3761905700
-beef_x:        -13.4335696200
-exx:           -25.2017108900
-hbeef_vdw:     -14.1583598522
-----------------------------------------------------------------
-pbe:           -13.8190145900
-pbe_exx:       -30.6672269900
-rpac:          -15.1756883678
-rpa:           -45.8429153578
-----------------------------------------------------------------
-dhbeef_vdw:    -17.1759305602
-----------------------------------------------------------------
-```
