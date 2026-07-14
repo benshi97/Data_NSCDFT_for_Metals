@@ -13,7 +13,7 @@ inputs         run_quacc.py
 ```
 
 - `01_beefxc_vdw` … `08_rpa` — step directories used by the workflows  
-- `inputs/` — required VASP input files for this example  
+- `inputs/` — required VASP input files (**only if you plan to use the Bash workflow**) for this example 
 - `run_quacc.py` — Python script that runs the `dhbeefvdw_flow` and prints the analyzed energies  
 
 ---
@@ -32,19 +32,16 @@ python run_quacc.py
 nsc_dft.sh "" dhbeefvdw
 ```
 
-The first argument is the MPI launcher command. Using `""` runs serially (useful for testing), but you can also provide a launcher such as:
-
-```bash
-nsc_dft.sh "srun --distribution=block:block --hint=nomultithread" dhbeefvdw
-```
+The first argument is the MPI launcher command. Using `""` runs serially (useful for testing and analysis after calculations finish).
 
 Both approaches will run (or analyze) the calculations stored in the step directories.
 
 ---
 
+
 ## Example Output
 
-After completion, the analyzed energies are printed:
+After the workflow finishes, the script analyzes the results from each calculation directory and prints the final energies (in eV):
 
 ```
 ----------------------------------------------------------------
@@ -62,5 +59,3 @@ rpa:           -45.8429153578
 dhbeef_vdw:    -17.1759305602
 ----------------------------------------------------------------
 ```
-
-All energies are reported in **electron volts (eV)** for the CO molecule.
