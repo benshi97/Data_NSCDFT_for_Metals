@@ -1,10 +1,14 @@
 \begin{longtable}{lrrrrr}
-\caption{\label{tab:s66_1}Interaction energies of the S66 benchmark set calculated with hBEEF-vdW, dhBEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to CCSD(T) estimates from Gold-Standard Chemical Database 137~\cite{liangGoldstandardChemicalDatabase2025} (GSCDB137).  All values are in kJ/mol.} \\
+\caption{\label{tab:s66_1}Interaction energies of the S66 benchmark set calculated with hBEEF-vdW@BEEF-vdW, dhBEEF-vdW@BEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to CCSD(T) estimates from Gold-Standard Chemical Database 137~\cite{liangGoldstandardChemicalDatabase2025} (GSCDB137).  All values are in kJ/mol. In the table, we have shortened hBEEF-vdW@BEEF-vdW and dhBEEF-vdW@BEEF-vdW to hBEEF-vdW and dhBEEF-vdW, respectively.} \\
 \toprule
 Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
+\midrule
 \endfirsthead
 
 \caption[]{(continued)} \\
+\toprule
+Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
+\midrule
 \endhead
 
 \multicolumn{6}{r}{{Continued on next page}} \\
@@ -13,7 +17,6 @@ Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhB
 \bottomrule
 \endlastfoot
 
-\midrule
 S66\_1 & -20.8 & -19.8 & -22.1 & -18.4 & -18.7 \\
 S66\_2 & -23.7 & -22.3 & -24.9 & -21.0 & -21.0 \\
 S66\_3 & -29.2 & -28.1 & -31.0 & -25.9 & -27.3 \\
@@ -81,5 +84,7 @@ S66\_64 & -12.4 & -12.4 & -13.4 & -10.1 & -11.0 \\
 S66\_65 & -17.1 & -16.7 & -18.6 & -15.1 & -15.9 \\
 S66\_66 & -16.5 & -14.6 & -16.0 & -13.5 & -13.4 \\
 MAD & - & 1.8 & 1.5 & 3.1 & 3.4 \\
+RMSD & - & 2.5 & 2.0 & 3.2 & 4.4 \\
+MSD & - & 1.5 & -0.9 & 3.1 & 3.3 \\
 \bottomrule
 \end{longtable}

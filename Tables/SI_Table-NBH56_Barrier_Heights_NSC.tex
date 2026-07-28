@@ -1,10 +1,14 @@
 \begin{longtable}{lrrrrr}
-\caption{\label{tab:nbh56_1}Reaction energies of the NBH56 benchmark set calculated with hBEEF-vdW, dhBEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to CCSD(T) estimates from Gold-Standard Chemical Database 137~\cite{liangGoldstandardChemicalDatabase2025} (GSCDB137).  All values are in kJ/mol.} \\
+\caption{\label{tab:nbh56_1}Barrier heights of the NBH56 benchmark set calculated with hBEEF-vdW@BEEF-vdW, dhBEEF-vdW@BEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to CCSD(T) estimates from Gold-Standard Chemical Database 137~\cite{liangGoldstandardChemicalDatabase2025} (GSCDB137).  All values are in kJ/mol. In the table, we have shortened hBEEF-vdW@BEEF-vdW and dhBEEF-vdW@BEEF-vdW to hBEEF-vdW and dhBEEF-vdW, respectively.} \\
 \toprule
 Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
+\midrule
 \endfirsthead
 
 \caption[]{(continued)} \\
+\toprule
+Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
+\midrule
 \endhead
 
 \multicolumn{6}{r}{{Continued on next page}} \\
@@ -13,7 +17,6 @@ Label & \rotatebox{90}{CCSD(T)} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhB
 \bottomrule
 \endlastfoot
 
-\midrule
 BH76\_3 & 176.1 & 132.4 & 129.0 & 161.8 & 117.3 \\
 BH76\_7 & 127.6 & 89.1 & 85.2 & 115.6 & 71.1 \\
 BH76\_8 & 238.1 & 204.5 & 195.6 & 223.5 & 185.1 \\
@@ -71,5 +74,7 @@ DBH24\_22 & 81.0 & 61.8 & 56.4 & 71.3 & 50.6 \\
 DBH24\_23 & 54.0 & 45.4 & 40.7 & 59.7 & 28.3 \\
 DBH24\_24 & 71.5 & 78.0 & 75.6 & 86.1 & 73.3 \\
 MAD & - & 21.0 & 26.1 & 6.8 & 29.9 \\
+RMSD & - & 28.7 & 36.1 & 9.0 & 36.3 \\
+MSD & - & -19.2 & -25.0 & -1.6 & -29.3 \\
 \bottomrule
 \end{longtable}

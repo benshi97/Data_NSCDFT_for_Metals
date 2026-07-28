@@ -41,7 +41,7 @@ color_dict = {
     "green": "#3cb44b",
     "yellow": "#ffe119",
     "blue": "#4363d8",
-    "orange": "#f58231",
+    "orange": "#D55E00",
     "purple": "#911eb4",
     "cyan": "#42d4f4",
     "magenta": "#f032e6",
@@ -59,6 +59,7 @@ color_dict = {
     "grey": "#a9a9a9",
     "white": "#ffffff",
     "black": "#000000",
+    "darkgoldenrod": "#D89000",
 }
 
 # Colors to cycle through for our plots

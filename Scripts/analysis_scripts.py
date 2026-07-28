@@ -385,48 +385,56 @@ def convert_df_to_latex_input(
     df_latex_input_lines[toprule_index+1] = df_latex_input_lines[toprule_index+1] + ' ' + multiindex_sep
 
     # ===== LONGTABLE handling =====
+    # ===== LONGTABLE handling =====
     if longtable:
-        # Replace \begin{tabular}{...} with \begin{longtable}{...}
         joined = '\n'.join(df_latex_input_lines)
 
-        # Replace \begin{tabular}{...} with \begin{longtable}{...}
         joined = re.sub(
-            r'\\begin\{tabular\}\{([^\}]*)\}',
+            r'\\begin\{tabular\}\{([^}]*)\}',
             lambda m: r'\begin{longtable}{' + m.group(1) + r'}',
             joined,
             count=1
         )
 
-        # Insert caption right after \begin{longtable}{...}
         joined = re.sub(
-            r'(\\begin\{longtable\}\{[^\}]*\})',
+            r'(\\begin\{longtable\}\{[^}]*\})',
             lambda m: m.group(1) + "\n" + caption_input + r" \\",
             joined,
             count=1
         )
 
-        # split back to lines to find header row position (toprule index may have shifted)
         lines = joined.splitlines()
 
-        # recompute top rule and header indices in the modified lines
         try:
-            toprule_index2 = [i for i, line in enumerate(lines) if "toprule" in line][0]
-            header_idx = toprule_index2 + 1  # header line (column names)
-        except IndexError:
-            # fallback: place longtable markers near beginning if we can't find top rule
-            header_idx = 2
+            toprule_index2 = next(
+                i for i, line in enumerate(lines)
+                if "toprule" in line
+            )
 
-        # number of columns for continued footer (include index column if present)
+            midrule_index2 = next(
+                i for i in range(toprule_index2 + 1, len(lines))
+                if "midrule" in lines[i]
+            )
+        except StopIteration as exc:
+            raise ValueError(
+                "Could not identify the LaTeX table header. "
+                "Expected both \\toprule and \\midrule."
+            ) from exc
+
+        # Includes all header rows, which also handles MultiIndex columns
+        header_lines = lines[toprule_index2:midrule_index2 + 1]
+
         n_cols = len(df.columns) + (1 if index else 0)
 
-        # construct the standard longtable continuation blocks (you can customize if needed)
         longtable_blocks = [
             r'\endfirsthead',
             '',
             r'\caption[]{' + longtable_continue_caption + r'} \\',
+            *header_lines,
             r'\endhead',
             '',
-            r'\multicolumn{' + str(n_cols) + r'}{r}{{Continued on next page}} \\',
+            r'\multicolumn{' + str(n_cols)
+            + r'}{r}{{Continued on next page}} \\',
             r'\endfoot',
             '',
             r'\bottomrule',
@@ -434,29 +442,101 @@ def convert_df_to_latex_input(
             ''
         ]
 
-        # insert longtable_blocks into lines after the header row but before the midrule/data
-        insert_pos = header_idx + 1
-        # guard: don't overflow
-        if insert_pos > len(lines):
-            insert_pos = len(lines)
+        # Place the continuation definitions after the complete first header
+        insert_pos = midrule_index2 + 1
         lines[insert_pos:insert_pos] = longtable_blocks
 
-        # Now the pandas produced \end{tabular} still exists; replace it with \end{longtable}
-        for i, ln in enumerate(lines):
-            if r'\end{tabular}' in ln:
-                lines[i] = ln.replace(r'\end{tabular}', r'\end{longtable}')
+        for i, line in enumerate(lines):
+            if r'\end{tabular}' in line:
+                lines[i] = line.replace(
+                    r'\end{tabular}',
+                    r'\end{longtable}'
+                )
                 break
 
         df_latex_input = '\n'.join(lines)
 
-        # When using longtable, we won't wrap the output with start_input/ end_input table env
-        # so the output_str mode should return df_latex_input directly.
         if output_str:
             return df_latex_input
-        else:
-            with open(filename, "w") as f:
-                f.write(df_latex_input)
-            return None
+
+        with open(filename, "w") as f:
+            f.write(df_latex_input)
+
+        return None
+
+
+    # if longtable:
+    #     # Replace \begin{tabular}{...} with \begin{longtable}{...}
+    #     joined = '\n'.join(df_latex_input_lines)
+
+    #     # Replace \begin{tabular}{...} with \begin{longtable}{...}
+    #     joined = re.sub(
+    #         r'\\begin\{tabular\}\{([^\}]*)\}',
+    #         lambda m: r'\begin{longtable}{' + m.group(1) + r'}',
+    #         joined,
+    #         count=1
+    #     )
+
+    #     # Insert caption right after \begin{longtable}{...}
+    #     joined = re.sub(
+    #         r'(\\begin\{longtable\}\{[^\}]*\})',
+    #         lambda m: m.group(1) + "\n" + caption_input + r" \\",
+    #         joined,
+    #         count=1
+    #     )
+
+    #     # split back to lines to find header row position (toprule index may have shifted)
+    #     lines = joined.splitlines()
+
+    #     # recompute top rule and header indices in the modified lines
+    #     try:
+    #         toprule_index2 = [i for i, line in enumerate(lines) if "toprule" in line][0]
+    #         header_idx = toprule_index2 + 1  # header line (column names)
+    #     except IndexError:
+    #         # fallback: place longtable markers near beginning if we can't find top rule
+    #         header_idx = 2
+
+    #     # number of columns for continued footer (include index column if present)
+    #     n_cols = len(df.columns) + (1 if index else 0)
+
+    #     # construct the standard longtable continuation blocks (you can customize if needed)
+    #     longtable_blocks = [
+    #         r'\endfirsthead',
+    #         '',
+    #         r'\caption[]{' + longtable_continue_caption + r'} \\',
+    #         r'\endhead',
+    #         '',
+    #         r'\multicolumn{' + str(n_cols) + r'}{r}{{Continued on next page}} \\',
+    #         r'\endfoot',
+    #         '',
+    #         r'\bottomrule',
+    #         r'\endlastfoot',
+    #         ''
+    #     ]
+
+    #     # insert longtable_blocks into lines after the header row but before the midrule/data
+    #     insert_pos = header_idx + 1
+    #     # guard: don't overflow
+    #     if insert_pos > len(lines):
+    #         insert_pos = len(lines)
+    #     lines[insert_pos:insert_pos] = longtable_blocks
+
+    #     # Now the pandas produced \end{tabular} still exists; replace it with \end{longtable}
+    #     for i, ln in enumerate(lines):
+    #         if r'\end{tabular}' in ln:
+    #             lines[i] = ln.replace(r'\end{tabular}', r'\end{longtable}')
+    #             break
+
+    #     df_latex_input = '\n'.join(lines)
+
+    #     # When using longtable, we won't wrap the output with start_input/ end_input table env
+    #     # so the output_str mode should return df_latex_input directly.
+    #     if output_str:
+    #         return df_latex_input
+    #     else:
+    #         with open(filename, "w") as f:
+    #             f.write(df_latex_input)
+    #         return None
 
     # ===== non-longtable (original path, slightly refactored) =====
     df_latex_input = '\n'.join(df_latex_input_lines)

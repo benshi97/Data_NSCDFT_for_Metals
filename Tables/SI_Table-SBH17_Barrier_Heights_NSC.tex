@@ -1,10 +1,22 @@
-\begin{table}[h]
-
-\caption{\label{tab:sbh17_1}Barrier heights of the SBH17 benchmark set calculated with hBEEF-vdW@BEEF-vdW, dhBEEF-vdW@BEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to experimental estimates from the SBH17 dataset~\cite{tchakouaSBH17BenchmarkDatabase2023}. All values are in kJ/mol.}
-\begin{tabular}{lrrrrr}
+\begin{longtable}{lrrrrr}
+\caption{\label{tab:sbh17_1}Barrier heights of the SBH17 benchmark set calculated with hBEEF-vdW@BEEF-vdW, dhBEEF-vdW@BEEF-vdW, RPA@PBE, BEEF-vdW. These are compared to experimental estimates from the SBH17 dataset~\cite{tchakouaSBH17BenchmarkDatabase2023}. All values are in kJ/mol. In the table, we have shortened hBEEF-vdW@BEEF-vdW and dhBEEF-vdW@BEEF-vdW to hBEEF-vdW and dhBEEF-vdW, respectively.} \\
 \toprule
 System & \rotatebox{90}{Experiment} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
 \midrule
+\endfirsthead
+
+\caption[]{(continued)} \\
+\toprule
+System & \rotatebox{90}{Experiment} & \rotatebox{90}{hBEEF-vdW} & \rotatebox{90}{dhBEEF-vdW} & \rotatebox{90}{RPA@PBE} & \rotatebox{90}{BEEF-vdW} \\ 
+\midrule
+\endhead
+
+\multicolumn{6}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
 \ce{H2 + Cu(111)} & 60.6 & 91.2 & 84.2 & 64.6 & 93.2 \\
 \ce{H2 + Cu(100)} & 71.4 & 102.3 & 94.3 & 70.6 & 100.4 \\
 \ce{H2 + Cu(110)} & 76.1 & 122.6 & 110.9 & 81.8 & 118.6 \\
@@ -26,7 +38,13 @@ MAD (Total) & - & 17.4 & 16.5 & 18.5 & 21.8 \\
 MAD (H2) & - & 22.4 & 18.2 & 8.0 & 23.9 \\
 MAD (CH4) & - & 13.5 & 10.4 & 11.5 & 21.7 \\
 MAD (N2) & - & 10.9 & 31.0 & 84.7 & 14.1 \\
+RMSD (Total) & - & 23.4 & 22.0 & 34.7 & 25.0 \\
+RMSD (H2) & - & 31.4 & 25.3 & 12.2 & 30.7 \\
+RMSD (CH4) & - & 17.4 & 13.7 & 14.7 & 22.3 \\
+RMSD (N2) & - & 13.8 & 32.1 & 86.2 & 14.1 \\
+MSD (Total) & - & 16.0 & 12.9 & 7.9 & 19.6 \\
+MSD (H2) & - & 22.2 & 17.7 & 7.8 & 23.9 \\
+MSD (CH4) & - & 13.5 & 10.4 & 5.0 & 21.7 \\
+MSD (N2) & - & -10.9 & -31.0 & -84.7 & -14.1 \\
 \bottomrule
-\end{tabular}
-
-\end{table}
+\end{longtable}
