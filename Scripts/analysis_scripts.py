@@ -178,6 +178,13 @@ def get_energy(filename, method="ccsdt", code="vasp"):
 
         return float(lines[-1].split()[-2]) if lines else 0.0
 
+    elif code == "vasp_po_corr":
+        search_word = "exchange ACFDT corr."
+        with _open_file(filename, mode="rt", encoding="ISO-8859-1") as fp:
+            lines = [line for line in fp if search_word in line]
+
+        return float(lines[-1].split("=")[1].split()[0]) if lines else 0.0
+
     return 0.0
 
 
